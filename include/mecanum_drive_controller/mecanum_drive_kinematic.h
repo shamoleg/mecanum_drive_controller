@@ -21,9 +21,10 @@ struct Vector{
 using Wheels = std::vector<double>;
 
 class MecanumDriveKinematic {
+
     MecanumDriveKinematic(double wheel_radius, double wheel_separation_x, double wheel_separation_y);
 
-    md::Wheels cartesian_to_wheels_velocities(md::Vector cartesian_velocities);
+    md::Wheels cartesian_to_wheels_velocities(md::Vector cartesian_velocities) const;
 
     md::Vector wheel_to_cartesian_velocities(md::Wheels wheels_velocities);
 
