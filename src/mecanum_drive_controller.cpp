@@ -3,7 +3,7 @@
 //
 
 #include "mecanum_drive_controller.h"
-namespace mecanum_drive_controller {
+namespace md {
 
 MecanumDriveController::MecanumDriveController() {
 

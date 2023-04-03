@@ -5,10 +5,30 @@
 #ifndef SRC_MECANUM_DRIVE_KINEMATIC_H
 #define SRC_MECANUM_DRIVE_KINEMATIC_H
 
+#include <vector>
+
+namespace md {
+
+struct Vector{
+    explicit Vector(const double& longitudinal = 0, const double& transversal = 0, const double& angle = 0);
+    double longitudinal;
+    double transversal;
+    double angle;
+
+    inline std::vector<double> to_vector() const;
+};
+
+using Wheels = std::vector<double>;
 
 class MecanumDriveKinematic {
+    void init();
+
+    md::Wheels cartesian_to_wheels_velocities(md::Vector cartesian_velocities);
+
+    md::Vector wheel_to_cartesian_velocities(md::Wheels wheels_velocities);
 
 };
 
+}
 
 #endif //SRC_MECANUM_DRIVE_KINEMATIC_H

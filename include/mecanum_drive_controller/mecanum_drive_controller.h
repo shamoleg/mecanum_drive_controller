@@ -8,7 +8,7 @@
 #include <controller_interface/controller.h>
 #include <hardware_interface/joint_command_interface.h>
 
-namespace mecanum_drive_controller {
+namespace md {
 class MecanumDriveController : public controller_interface::Controller<hardware_interface::VelocityJointInterface> {
 public:
     MecanumDriveController();
