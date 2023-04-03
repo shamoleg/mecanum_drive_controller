@@ -22,10 +22,11 @@ MecanumDriveKinematic::MecanumDriveKinematic(double wheel_radius, double wheel_s
         wheel_separation_y_(wheel_separation_y)
         {}
 
-md::Wheels MecanumDriveKinematic::cartesian_to_wheels_velocities(md::Vector cartesian_velocities) const {
-    double vx = cartesian_velocities.longitudinal / wheel_radius_;
-    double vy = cartesian_velocities.transversal /wheel_radius_;
-    double w  = ((wheel_separation_x_ + wheel_separation_y_) / wheel_radius_) * cartesian_velocities.angle;
+
+md::Wheels MecanumDriveKinematic::cartesian_to_wheels_velocities(const md::Vector& vel) const {
+    double vx = vel.longitudinal / wheel_radius_;
+    double vy = vel.transversal / wheel_radius_;
+    double w  = ((wheel_separation_x_ + wheel_separation_y_) / wheel_radius_) * vel.angle;
 
     md::Wheels wheels_velocity(4);
     wheels_velocity[0] = +vx + vy - w;
@@ -36,8 +37,16 @@ md::Wheels MecanumDriveKinematic::cartesian_to_wheels_velocities(md::Vector cart
     return wheels_velocity;
 }
 
-md::Vector MecanumDriveKinematic::wheel_to_cartesian_velocities(md::Wheels wheels_velocities) {
-    return md::Vector();
+
+md::Vector MecanumDriveKinematic::wheel_to_cartesian_velocities(const md::Wheels& vel) const{
+    md::Vector cartesian_vel;
+    static double wheel_radius_per4 = wheel_radius_ / 4;
+
+    cartesian_vel.longitudinal = (-vel[0] + vel[1] - vel[2] + vel[3]) / wheel_radius_per4;
+    cartesian_vel.transversal  = (-vel[0] + vel[1] - vel[2] + vel[3]) / wheel_radius_per4;
+    cartesian_vel.angle        = (-vel[0] + vel[1] - vel[2] + vel[3]) / wheel_radius_per4;
+
+    return cartesian_vel;
 }
 
 }
