@@ -13,11 +13,17 @@ bool MecanumDriveController::init(hardware_interface::VelocityJointInterface *hw
     std::size_t id = complete_ns.find_last_of('/');
     name_ = complete_ns.substr(id + 1);
 
-    std:std::vector<std::string> wheel_name;
-    controller_nh.param("joints", wheel_name, wheel_name);
-    for(int i = 0; i < wheel_name.size(); ++i){
-        ROS_INFO_STREAM_NAMED(name_, wheel_name[i] << " use joint_handle[" << i << "] is ");
-        hi_wheel_[i] = hw->getHandle(wheel_name[i]);
+    std::vector<std::string> wheel_joint_names = {
+            "front_left_wheel_joint",
+            "front_right_wheel_joint",
+            "back_left_wheel_joint",
+            "back_right_wheel_joint"
+    };
+    for(int i = 0; i < wheel_joint_names.size(); ++i){
+        std::string wheel_name;
+        controller_nh.param(wheel_joint_names[i], wheel_name, wheel_name);
+        ROS_INFO_STREAM_NAMED(name_, wheel_joint_names[i] << " use joint_handle[" << i << "] is " << wheel_name);
+        hi_wheel_[i] = hw->getHandle(wheel_name);
     }
 
 
