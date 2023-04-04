@@ -45,12 +45,12 @@ void MecanumDriveController::update(const ros::Time &time, const ros::Duration &
         cmd_current.twist.angular.z = 0.0;
     }
 
-    const auto wheel_vel = kinematic.cartesian_to_wheels_velocities(cmd_current.twist);
+    const auto wheel_vel = kinematic.cartesian_vel_to_wheel_vel(cmd_current.twist);
 
     hi_wheel_[0].setCommand(wheel_vel[0]);
-    hi_wheel_[1].setCommand(wheel_vel[0]);
-    hi_wheel_[2].setCommand(wheel_vel[0]);
-    hi_wheel_[3].setCommand(wheel_vel[0]);
+    hi_wheel_[1].setCommand(- wheel_vel[1]);
+    hi_wheel_[2].setCommand(wheel_vel[2]);
+    hi_wheel_[3].setCommand(- wheel_vel[3]);
 
 }
 

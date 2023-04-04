@@ -4,6 +4,6 @@ my_booy:
   back_left_wheel_joint: "wheel_joint_bl"
   front_right_wheel_joint: "wheel_joint_fr"
   back_right_wheel_joint: "wheel_joint_br"
-  wheel_separation_x: 0.638
-  wheel_separation_y: 0.551
-  wheel_radius: 0.02
+  wheel_separation_x: 0.3
+  wheel_separation_y: 0.47
+  wheel_radius: 0.0475
