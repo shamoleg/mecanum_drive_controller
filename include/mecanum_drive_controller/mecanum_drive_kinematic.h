@@ -8,7 +8,9 @@
 #define BASEWHELLS ((int)(4))
 
 #include <geometry_msgs/Twist.h>
-#include <std_msgs/Float32MultiArray.h>
+#include <ros/ros.h>
+
+
 #include <vector>
 #include <array>
 
@@ -20,7 +22,7 @@ class MecanumDriveKinematic {
 public:
     MecanumDriveKinematic();
 
-    void init(double wheel_radius, double wheel_separation_y, double wheel_separation_x);
+    void init(ros::NodeHandle& controller_nh);
 
     Wheels cartesian_to_wheels_velocities(const geometry_msgs::Twist& vel) const;
 
@@ -28,8 +30,6 @@ public:
 
 private:
     double wheel_radius_;
-    double wheel_separation_x_;
-    double wheel_separation_y_;
     double wheel_separation_coef_;
 };
 

@@ -5,10 +5,11 @@
 #include "mecanum_drive_controller/mecanum_drive_controller.h"
 namespace mecanum_drive_controller {
 
-MecanumDriveController::MecanumDriveController(){};
+MecanumDriveController::MecanumDriveController()= default;
 
 bool MecanumDriveController::init(hardware_interface::VelocityJointInterface *hw, ros::NodeHandle &root_nh,
                                   ros::NodeHandle &controller_nh) {
+
     const std::string complete_ns = controller_nh.getNamespace();
     std::size_t id = complete_ns.find_last_of('/');
     name_ = complete_ns.substr(id + 1);
@@ -26,8 +27,7 @@ bool MecanumDriveController::init(hardware_interface::VelocityJointInterface *hw
         hi_wheel_[i] = hw->getHandle(wheel_name);
     }
 
-
-    kinematic.init(0.03, 0.3 ,0.3);
+    kinematic.init(controller_nh);
 
     sub_ = controller_nh.subscribe("cmd_vel", 1, &MecanumDriveController::cb_cmd_twist, this);
 
