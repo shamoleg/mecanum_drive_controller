@@ -26,7 +26,7 @@ void MecanumDriveKinematic::init(ros::NodeHandle& controller_nh) {
     ROS_INFO_STREAM_NAMED(name_, "Wheel separation y set to " << wheel_separation_y);
 
     wheel_radius_ = wheel_radius,
-    wheel_separation_coef_ = wheel_separation_y + wheel_separation_x;
+    wheel_separation_coef_ = (wheel_separation_y + wheel_separation_x) / 2;
 }
 
 
