@@ -42,7 +42,7 @@ private:
 
     realtime_tools::RealtimeBuffer<geometry_msgs::TwistStamped> cmd_rt_buffer;
 
-    std::array<hardware_interface::JointHandle, 4> hi_wheel_;
+    std::array<hardware_interface::JointHandle, BASEWHELLS> hi_wheel_;
 
     void cb_cmd_twist(const geometry_msgs::Twist& cmd);
 

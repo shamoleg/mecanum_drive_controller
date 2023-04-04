@@ -1,2 +1,7 @@
 my_booy:
   type: "mecanum_drive_controller/MecanumDriveController"
+  joints:
+    - wheel_joint_fl
+    - wheel_joint_fr
+    - wheel_joint_bl
+    - wheel_joint_br
