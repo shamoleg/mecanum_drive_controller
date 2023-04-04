@@ -1,0 +1,2 @@
+my_booy:
+  type: "mecanum_drive_controller/MecanumDriveController"

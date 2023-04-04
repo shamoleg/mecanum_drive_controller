@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>mecanum_drive_controller</name>
+  <name>mecanum_control</name>
   <version>0.0.0</version>
   <description>The mecanum_drive_controller package</description>
   <maintainer email="sham@todo.todo">sham</maintainer>
@@ -10,12 +10,15 @@
   <build_depend>roscpp</build_depend>
   <build_depend>controller_interface</build_depend>
   <build_depend>realtime_tools</build_depend>
+  <build_depend>joint_state_controller</build_depend>
+
+  <exec_depend>joint_state_controller</exec_depend>
   <exec_depend>controller_interface</exec_depend>
   <exec_depend>realtime_tools</exec_depend>
   <build_export_depend>roscpp</build_export_depend>
   <exec_depend>roscpp</exec_depend>
 
   <export>
-
+    <controller_interface plugin="${prefix}/mecanum_drive_controller_plugins.xml"/>
   </export>
 </package>

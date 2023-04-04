@@ -5,10 +5,22 @@
 #ifndef SRC_MECANUMDRIVECONTROLLER_H
 #define SRC_MECANUMDRIVECONTROLLER_H
 
+#include "mecanum_drive_kinematic.h"
+
+#include <pluginlib/class_list_macros.h>
+
 #include <controller_interface/controller.h>
 #include <hardware_interface/joint_command_interface.h>
 
-namespace md {
+#include <realtime_tools/realtime_buffer.h>
+#include <realtime_tools/realtime_publisher.h>
+
+#include <nav_msgs/Odometry.h>
+#include <geometry_msgs/TwistStamped.h>
+#include <std_msgs/Float64MultiArray.h>
+
+
+namespace mecanum_drive_controller {
 class MecanumDriveController : public controller_interface::Controller<hardware_interface::VelocityJointInterface> {
 public:
     MecanumDriveController();
@@ -22,12 +34,20 @@ public:
     void starting(const ros::Time& time) override;
 
     void stopping(const ros::Time& time) override;
+
 private:
     std::string name_;
+    ros::Subscriber sub_;
+    mecanum_drive_controller::MecanumDriveKinematic kinematic;
 
-    std::vector<hardware_interface::JointHandle> jointHandle_;
+    realtime_tools::RealtimeBuffer<geometry_msgs::TwistStamped> cmd_rt_buffer;
+
+    std::array<hardware_interface::JointHandle, 4> hi_wheel_;
+
+    void cb_cmd_twist(const geometry_msgs::Twist& cmd);
 
 };
 
+PLUGINLIB_EXPORT_CLASS(mecanum_drive_controller::MecanumDriveController, controller_interface::ControllerBase)
 }
 #endif //SRC_MECANUMDRIVECONTROLLER_H

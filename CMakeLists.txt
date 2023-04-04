@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(mecanum_drive_controller)
+project(mecanum_control)
 
 find_package(catkin REQUIRED COMPONENTS
         controller_interface
@@ -7,27 +7,10 @@ find_package(catkin REQUIRED COMPONENTS
         roscpp
 )
 
-add_executable(mecanum_drive_controller_node
-        src/temp_test_node.cpp
+set(mecanum_drive_controller_sources
         src/mecanum_drive_controller.cpp
         src/mecanum_drive_kinematic.cpp)
 
-add_dependencies(mecanum_drive_controller_node ${catkin_EXPORTED_TARGETS})
-
-target_link_libraries(mecanum_drive_controller_node
-        ${catkin_LIBRARIES}
-        )
-
-INCLUDE_DIRECTORIES(
-        include
-        include/mecanum_drive_controller
-)
-
-set(mecanum_drive_controller_sources
-        src/temp_test_node.cpp
-        src/mecanum_drive_controller.cpp
-        src/mecanum_drive_kinematic.cpp
-        )
 
 catkin_package(
         INCLUDE_DIRS include
@@ -51,6 +34,8 @@ install(TARGETS mecanum_drive_controller
 install(FILES mecanum_drive_controller_plugins.xml
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
-install(DIRECTORY config launch
-        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-        )
+install(
+        DIRECTORY include/mecanum_drive_controller/
+        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)
+

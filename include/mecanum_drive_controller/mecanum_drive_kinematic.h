@@ -5,34 +5,29 @@
 #ifndef SRC_MECANUM_DRIVE_KINEMATIC_H
 #define SRC_MECANUM_DRIVE_KINEMATIC_H
 
+#include <geometry_msgs/Twist.h>
+#include <std_msgs/Float64MultiArray.h>
 #include <vector>
+#include <array>
 
-namespace md {
-
-struct Vector{
-    explicit Vector(const double& longitudinal = 0, const double& transversal = 0, const double& angle = 0);
-    double longitudinal;
-    double transversal;
-    double angle;
-
-    inline std::vector<double> to_vector() const;
-};
-
-using Wheels = std::vector<double>;
+namespace mecanum_drive_controller {
 
 class MecanumDriveKinematic {
+public:
+    inline explicit MecanumDriveKinematic();
 
-    MecanumDriveKinematic(double wheel_radius, double wheel_separation_x, double wheel_separation_y);
+    void init(double wheel_radius, double wheel_separation_y, double wheel_separation_x);
 
-    md::Wheels cartesian_to_wheels_velocities(const md::Vector& vel) const;
+    std_msgs::Float64MultiArray cartesian_to_wheels_velocities(const geometry_msgs::Twist& vel) const;
 
-    md::Vector wheel_to_cartesian_velocities(const md::Wheels& vel) const;
+    geometry_msgs::Twist wheel_to_cartesian_velocities(const std_msgs::Float64MultiArray& vel) const;
 
 private:
     double wheel_radius_;
     double wheel_separation_x_;
     double wheel_separation_y_;
 };
+
 
 }
 
