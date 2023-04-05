@@ -44,30 +44,48 @@ void MecanumDriveController::update(const ros::Time &time, const ros::Duration &
     if (dt > 0.25)
         cmd_current = geometry_msgs::TwistStamped();
 
-    const auto wheel_vel = kinematic.cartesian_vel_to_wheel_vel(cmd_current.twist);
+    const auto cmd_wheel_vel = kinematic.get_wheels_vel(cmd_current.twist);
 
     //TODO add reverse param
-    hi_wheel_[0].setCommand(wheel_vel[0]);
-    hi_wheel_[1].setCommand(- wheel_vel[1]);
-    hi_wheel_[2].setCommand(wheel_vel[2]);
-    hi_wheel_[3].setCommand(- wheel_vel[3]);
+    hi_wheel_[0].setCommand(cmd_wheel_vel[0]);
+    hi_wheel_[1].setCommand(- cmd_wheel_vel[1]);
+    hi_wheel_[2].setCommand(cmd_wheel_vel[2]);
+    hi_wheel_[3].setCommand(- cmd_wheel_vel[3]);
 
-    Wheels wheel_pos{
-            hi_wheel_[0].getPosition(),
-            hi_wheel_[1].getPosition(),
-            hi_wheel_[2].getPosition(),
-            hi_wheel_[3].getPosition(),
-    };
+    Wheels curr_wheel_pos{hi_wheel_[0].getPosition(), -hi_wheel_[1].getPosition(),
+                          -hi_wheel_[2].getPosition(), hi_wheel_[3].getPosition()};
+
+    Wheels curr_wheel_vel{hi_wheel_[0].getVelocity(), -hi_wheel_[1].getVelocity(),
+                          -hi_wheel_[2].getVelocity(), hi_wheel_[3].getVelocity()};
+
+
+    if (pub_odom_->trylock())
+    {
+        pub_odom_->msg_.header.stamp = time;
+        pub_odom_->msg_.pose.pose = kinematic.get_cartesian_pose(curr_wheel_pos);
+        pub_odom_->msg_.twist.twist = kinematic.get_cartesian_vel(curr_wheel_vel);
+        pub_odom_->unlockAndPublish();
+    }
+    if (pub_odom_tf_->trylock())
+    {
+        geometry_msgs::TransformStamped& odom_frame = pub_odom_tf_->msg_.transforms[0];
+        odom_frame.header.stamp = time;
+        odom_frame.transform.translation.x =  pub_odom_->msg_.pose.pose.position.x;
+        odom_frame.transform.translation.y = pub_odom_->msg_.pose.pose.position.y;
+        odom_frame.transform.rotation = pub_odom_->msg_.pose.pose.orientation;
+        pub_odom_tf_->unlockAndPublish();
+    }
+
 }
 
 
 void MecanumDriveController::starting(const ros::Time &time) {
-    std::cout << "starting";
+    std::cout << "\nstarting\n";
 }
 
 
 void MecanumDriveController::stopping(const ros::Time &time) {
-    std::cout << "stopping";
+    std::cout << "\nstopping\n";
 }
 
 void MecanumDriveController::cb_cmd_twist(const geometry_msgs::Twist &cmd) {

@@ -35,7 +35,7 @@ void MecanumDriveKinematic::init(ros::NodeHandle& controller_nh) {
 }
 
 
-Wheels MecanumDriveKinematic::cartesian_vel_to_wheel_vel(const geometry_msgs::Twist& vel) const {
+Wheels MecanumDriveKinematic::get_wheels_vel(const geometry_msgs::Twist& vel) const {
     double vx_per_R = vel.linear.x / wheel_radius_;
     double vy_per_R = vel.linear.y / wheel_radius_;
     double w_with_coef = wheel_sep_coef_ * wheel_radius_ * vel.angular.z ;
@@ -49,7 +49,7 @@ Wheels MecanumDriveKinematic::cartesian_vel_to_wheel_vel(const geometry_msgs::Tw
     return wheels_velocity;
 }
 
-geometry_msgs::Twist MecanumDriveKinematic::wheel_vel_to_cartesian_vel(const Wheels& vel) const{
+geometry_msgs::Twist MecanumDriveKinematic::get_cartesian_vel(const Wheels& vel) const{
     static double wheel_radius_per4 = wheel_radius_ / 4;
 
     geometry_msgs::Twist cartesian_vel;
@@ -60,7 +60,7 @@ geometry_msgs::Twist MecanumDriveKinematic::wheel_vel_to_cartesian_vel(const Whe
     return cartesian_vel;
 }
 
-geometry_msgs::Pose2D MecanumDriveKinematic::wheel_pos_to_cartesian_pos(const Wheels &pos) {
+geometry_msgs::Pose2D MecanumDriveKinematic::get_cartesian_pose2d(const Wheels &pos) {
     if (!last_wheel_pos_init_) {
         last_wheel_pos = pos;
         curr_pos = geometry_msgs::Pose2D();
@@ -87,6 +87,18 @@ geometry_msgs::Pose2D MecanumDriveKinematic::wheel_pos_to_cartesian_pos(const Wh
     curr_pos.y += delta_pos_y * cos_theta + delta_pos_y * sin_theta;
 
     return curr_pos;
+}
+
+geometry_msgs::Pose MecanumDriveKinematic::get_cartesian_pose(const Wheels &pos) {
+    get_cartesian_pose2d(pos);
+    geometry_msgs::Pose cartesian_pose;
+    tf2::Quaternion quaternion_tf2;
+    quaternion_tf2.setRPY(0, 0, curr_pos.theta);
+
+    cartesian_pose.position.x = curr_pos.x;
+    cartesian_pose.position.y = curr_pos.y;
+    cartesian_pose.orientation = tf2::toMsg(quaternion_tf2);
+    return cartesian_pose;
 }
 
 }

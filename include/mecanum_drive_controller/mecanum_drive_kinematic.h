@@ -7,9 +7,15 @@
 
 #define BASEWHELLS ((int)(4))
 
+#include <ros/ros.h>
+
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Pose2D.h>
-#include <ros/ros.h>
+#include <geometry_msgs/Pose.h>
+
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+
 
 
 #include <vector>
@@ -25,11 +31,13 @@ public:
 
     void init(ros::NodeHandle& controller_nh);
 
-    Wheels cartesian_vel_to_wheel_vel(const geometry_msgs::Twist& vel) const;
+    Wheels get_wheels_vel(const geometry_msgs::Twist& vel) const;
 
-    geometry_msgs::Twist wheel_vel_to_cartesian_vel(const Wheels& vel) const;
+    geometry_msgs::Twist get_cartesian_vel(const Wheels& vel) const;
 
-    geometry_msgs::Pose2D wheel_pos_to_cartesian_pos(const Wheels& vel);
+    geometry_msgs::Pose2D get_cartesian_pose2d(const Wheels& pos);
+
+    geometry_msgs::Pose get_cartesian_pose(const Wheels& vel);
 
 private:
     double wheel_radius_;
