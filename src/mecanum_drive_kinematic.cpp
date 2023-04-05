@@ -38,7 +38,7 @@ void MecanumDriveKinematic::init(ros::NodeHandle& controller_nh) {
 Wheels MecanumDriveKinematic::get_wheels_vel(const geometry_msgs::Twist& vel) const {
     double vx_per_R = vel.linear.x / wheel_radius_;
     double vy_per_R = vel.linear.y / wheel_radius_;
-    double w_with_coef = wheel_sep_coef_ * wheel_radius_ * vel.angular.z ;
+    double w_with_coef =  vel.angular.z * wheel_sep_coef_ / wheel_radius_;
 
     Wheels wheels_velocity;
     wheels_velocity[0] = + vx_per_R + vy_per_R - w_with_coef;
@@ -53,8 +53,8 @@ geometry_msgs::Twist MecanumDriveKinematic::get_cartesian_vel(const Wheels& vel)
     static double wheel_radius_per4 = wheel_radius_ / 4;
 
     geometry_msgs::Twist cartesian_vel;
-    cartesian_vel.linear.x  = (-vel[0] + vel[1] - vel[2] + vel[3]) * wheel_radius_per4;
-    cartesian_vel.linear.y  = (-vel[0] + vel[1] - vel[2] + vel[3]) * wheel_radius_per4;
+    cartesian_vel.linear.x  = (+vel[0] - vel[1] - vel[2] + vel[3]) * wheel_radius_per4;
+    cartesian_vel.linear.y  = (+vel[0] + vel[1] + vel[2] + vel[3]) * wheel_radius_per4;
     cartesian_vel.angular.z = (-vel[0] + vel[1] - vel[2] + vel[3]) * (wheel_radius_per4 / wheel_sep_coef_);
 
     return cartesian_vel;
@@ -76,15 +76,15 @@ geometry_msgs::Pose2D MecanumDriveKinematic::get_cartesian_pose2d(const Wheels &
     last_wheel_pos = pos;
 
     static double wheel_radius_per4 = wheel_radius_ / 4;
-    double delta_pos_x = (-delta_pos[0] + delta_pos[1] - delta_pos[2] + delta_pos[3]) * wheel_radius_per4;
-    double delta_pos_y = ( delta_pos[0] + delta_pos[1] - delta_pos[2] - delta_pos[3]) * wheel_radius_per4;
-    curr_pos.theta += (delta_pos[0] + delta_pos[1] + delta_pos[2] + delta_pos[3]) * (wheel_radius_per4/wheel_sep_coef_);
+    double delta_pos_x = (+delta_pos[0] - delta_pos[1] - delta_pos[2] + delta_pos[3]) * wheel_radius_per4;
+    double delta_pos_y = (+delta_pos[0] + delta_pos[1] + delta_pos[2] + delta_pos[3]) * wheel_radius_per4;
+    curr_pos.theta += (-delta_pos[0] + delta_pos[1] - delta_pos[2] + delta_pos[3]) * (wheel_radius_per4/wheel_sep_coef_);
 
     const double cos_theta = cos(curr_pos.theta);
     const double sin_theta = sin(curr_pos.theta);
 
-    curr_pos.x += delta_pos_x * cos_theta - delta_pos_x * sin_theta;
-    curr_pos.y += delta_pos_y * cos_theta + delta_pos_y * sin_theta;
+    curr_pos.x += delta_pos_x * cos_theta - delta_pos_y * sin_theta;
+    curr_pos.y += delta_pos_x * sin_theta + delta_pos_y * cos_theta;
 
     return curr_pos;
 }
