@@ -18,7 +18,7 @@
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/TwistStamped.h>
 #include <std_msgs/Float64MultiArray.h>
-
+#include <tf/tfMessage.h>
 
 namespace mecanum_drive_controller {
 class MecanumDriveController : public controller_interface::Controller<hardware_interface::VelocityJointInterface> {
@@ -38,6 +38,10 @@ public:
 private:
     std::string name_;
     ros::Subscriber sub_;
+
+    std::shared_ptr<realtime_tools::RealtimePublisher<nav_msgs::Odometry> > pub_odom_;
+    std::shared_ptr<realtime_tools::RealtimePublisher<tf::tfMessage> > pub_odom_tf_;
+
     mecanum_drive_controller::MecanumDriveKinematic kinematic;
 
     realtime_tools::RealtimeBuffer<geometry_msgs::TwistStamped> cmd_rt_buffer;
@@ -46,6 +50,7 @@ private:
 
     void cb_cmd_twist(const geometry_msgs::Twist& cmd);
 
+    void set_pub_odom_fields(ros::NodeHandle& root_nh, ros::NodeHandle& controller_nh);
 };
 
 PLUGINLIB_EXPORT_CLASS(mecanum_drive_controller::MecanumDriveController, controller_interface::ControllerBase)

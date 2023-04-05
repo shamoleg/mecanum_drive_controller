@@ -14,7 +14,7 @@ MecanumDriveKinematic::MecanumDriveKinematic() :
 
 
 void MecanumDriveKinematic::init(ros::NodeHandle& controller_nh) {
-    const std::string complete_ns = controller_nh.getNamespace();
+    const std::string& complete_ns = controller_nh.getNamespace();
     std::size_t id = complete_ns.find_last_of('/');
     std::string name_ = complete_ns.substr(id + 1);
 
