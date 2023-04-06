@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>mecanum_control</name>
+  <name>mecanum_drive_controller</name>
   <version>0.3.2</version>
   <description>dd</description>
   <maintainer email="d@d.com">d d</maintainer>

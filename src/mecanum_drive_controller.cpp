@@ -56,15 +56,8 @@ void MecanumDriveController::update(const ros::Time &time, const ros::Duration &
     Wheels curr_wheel_pos{hi_wheel_[0].getPosition(), -hi_wheel_[1].getPosition(),
                           hi_wheel_[2].getPosition(), -hi_wheel_[3].getPosition()};
 
-    for(auto s : curr_wheel_pos){
-        std::cout << s << "\t";
-    }  std::cout << "\n";
-
     Wheels curr_wheel_vel{hi_wheel_[0].getVelocity(), -hi_wheel_[1].getVelocity(),
                           hi_wheel_[2].getVelocity(), -hi_wheel_[3].getVelocity()};
-    for(auto s : curr_wheel_vel){
-        std::cout << s << "\t";
-    }  std::cout << "\n";
 
     if (pub_odom_->trylock())
     {

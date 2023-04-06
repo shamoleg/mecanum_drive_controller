@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(mecanum_control)
+project(mecanum_drive_controller)
 
 find_package(catkin REQUIRED COMPONENTS
         controller_interface
