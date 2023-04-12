@@ -38,6 +38,7 @@ bool MecanumDriveController::init(hardware_interface::VelocityJointInterface *hw
 
 
 void MecanumDriveController::update(const ros::Time &time, const ros::Duration &period) {
+    try{
     geometry_msgs::TwistStamped cmd_current = *(cmd_rt_buffer.readFromRT());
 
     const double dt = (time - cmd_current.header.stamp).toSec();
@@ -48,16 +49,16 @@ void MecanumDriveController::update(const ros::Time &time, const ros::Duration &
 
 
     //TODO add reverse param
-    hi_wheel_[0].setCommand(cmd_wheel_vel[0]);
-    hi_wheel_[1].setCommand(-cmd_wheel_vel[1]);
-    hi_wheel_[2].setCommand(cmd_wheel_vel[2]);
-    hi_wheel_[3].setCommand(-cmd_wheel_vel[3]);
+    hi_wheel_[0].setCommand(-cmd_wheel_vel[0]);
+    hi_wheel_[1].setCommand(cmd_wheel_vel[1]);
+    hi_wheel_[2].setCommand(-cmd_wheel_vel[2]);
+    hi_wheel_[3].setCommand(cmd_wheel_vel[3]);
 
-    Wheels curr_wheel_pos{hi_wheel_[0].getPosition(), -hi_wheel_[1].getPosition(),
-                          hi_wheel_[2].getPosition(), -hi_wheel_[3].getPosition()};
+    Wheels curr_wheel_pos{-hi_wheel_[0].getPosition(), hi_wheel_[1].getPosition(),
+                          -hi_wheel_[2].getPosition(), hi_wheel_[3].getPosition()};
 
-    Wheels curr_wheel_vel{hi_wheel_[0].getVelocity(), -hi_wheel_[1].getVelocity(),
-                          hi_wheel_[2].getVelocity(), -hi_wheel_[3].getVelocity()};
+    Wheels curr_wheel_vel{-hi_wheel_[0].getVelocity(), hi_wheel_[1].getVelocity(),
+                          -hi_wheel_[2].getVelocity(), hi_wheel_[3].getVelocity()};
 
     if (pub_odom_->trylock())
     {
@@ -75,7 +76,10 @@ void MecanumDriveController::update(const ros::Time &time, const ros::Duration &
         odom_frame.transform.rotation = pub_odom_->msg_.pose.pose.orientation;
         pub_odom_tf_->unlockAndPublish();
     }
-
+}
+catch(std::exception& e){
+    ROS_ERROR("\n\n\n\nim cry %s", e.what());
+}
 }
 
 
@@ -101,28 +105,28 @@ void MecanumDriveController::set_pub_odom_fields(ros::NodeHandle& root_nh, ros::
     double pose_cov_list[6]{0.001, 0.001, 1000000.0, 1000000.0, 1000000.0, 0.03};
     double twist_cov_list[6]{0.001, 0.001, 0.001, 1000000.0, 1000000.0, 0.03};
     pub_odom_.reset(new realtime_tools::RealtimePublisher<nav_msgs::Odometry>(controller_nh, "odom", 100));
-    pub_odom_->msg_.child_frame_id = "base_frame_id_";
-    pub_odom_->msg_.header.frame_id = "odom_frame_id_";
-    pub_odom_->msg_.pose.covariance = {
-            static_cast<double>(pose_cov_list[0]), 0., 0., 0., 0., 0.,
-            0., static_cast<double>(pose_cov_list[1]), 0., 0., 0., 0.,
-            0., 0., static_cast<double>(pose_cov_list[2]), 0., 0., 0.,
-            0., 0., 0., static_cast<double>(pose_cov_list[3]), 0., 0.,
-            0., 0., 0., 0., static_cast<double>(pose_cov_list[4]), 0.,
-            0., 0., 0., 0., 0., static_cast<double>(pose_cov_list[5]) };
-    pub_odom_->msg_.twist.covariance = {
-            static_cast<double>(twist_cov_list[0]), 0., 0., 0., 0., 0.,
-            0., static_cast<double>(twist_cov_list[1]), 0., 0., 0., 0.,
-            0., 0., static_cast<double>(twist_cov_list[2]), 0., 0., 0.,
-            0., 0., 0., static_cast<double>(twist_cov_list[3]), 0., 0.,
-            0., 0., 0., 0., static_cast<double>(twist_cov_list[4]), 0.,
-            0., 0., 0., 0., 0., static_cast<double>(twist_cov_list[5]) };
+    pub_odom_->msg_.child_frame_id = "base_footprint";
+    pub_odom_->msg_.header.frame_id = "odom";
+//    pub_odom_->msg_.pose.covariance = {
+//            static_cast<double>(pose_cov_list[0]), 0., 0., 0., 0., 0.,
+//            0., static_cast<double>(pose_cov_list[1]), 0., 0., 0., 0.,
+//            0., 0., static_cast<double>(pose_cov_list[2]), 0., 0., 0.,
+//            0., 0., 0., static_cast<double>(pose_cov_list[3]), 0., 0.,
+//            0., 0., 0., 0., static_cast<double>(pose_cov_list[4]), 0.,
+//            0., 0., 0., 0., 0., static_cast<double>(pose_cov_list[5]) };
+//    pub_odom_->msg_.twist.covariance = {
+//            static_cast<double>(twist_cov_list[0]), 0., 0., 0., 0., 0.,
+//            0., static_cast<double>(twist_cov_list[1]), 0., 0., 0., 0.,
+//            0., 0., static_cast<double>(twist_cov_list[2]), 0., 0., 0.,
+//            0., 0., 0., static_cast<double>(twist_cov_list[3]), 0., 0.,
+//            0., 0., 0., 0., static_cast<double>(twist_cov_list[4]), 0.,
+//            0., 0., 0., 0., 0., static_cast<double>(twist_cov_list[5]) };
 
 
     pub_odom_tf_.reset(new realtime_tools::RealtimePublisher<tf::tfMessage>(root_nh, "/tf", 100));
     pub_odom_tf_->msg_.transforms.resize(1);
-    pub_odom_tf_->msg_.transforms[0].child_frame_id = "base_frame_id_";
-    pub_odom_tf_->msg_.transforms[0].header.frame_id = "odom_frame_id_";
+    pub_odom_tf_->msg_.transforms[0].child_frame_id = "base_footprint";
+    pub_odom_tf_->msg_.transforms[0].header.frame_id = "odom";
 }
 
 }
